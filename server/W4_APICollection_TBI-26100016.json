@@ -1,0 +1,198 @@
+{
+  "info": {
+    "name": "HimShakti API — W4_APICollection_TBI-26100016",
+    "description": "REST API collection for HimShakti AI D2C Platform. Covers all 7 product endpoints: GET all, search, GET single, POST, PUT, PATCH, DELETE.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:5000/",
+        "description": "Verify the API server is running"
+      },
+      "response": [
+        {
+          "name": "200 OK — Server running",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"HimShakti API is running\",\n  \"version\": \"1.0.0\",\n  \"endpoints\": {\n    \"products\": \"/api/products\",\n    \"search\": \"/api/products/search?q=<query>\",\n    \"singleProduct\": \"/api/products/:id\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "GET All Products",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:5000/api/products",
+        "description": "Fetch all products. Optional query params: ?category=Snacks or ?inStock=true"
+      },
+      "response": [
+        {
+          "name": "200 OK — All products returned",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"count\": 6,\n  \"data\": [\n    {\n      \"_id\": \"665f1a2b3c4d5e6f7a8b9c0d\",\n      \"name\": \"Himalayan Millet Crunch Bar\",\n      \"category\": \"Snacks\",\n      \"price\": 199,\n      \"weight\": \"200g (pack of 6)\",\n      \"description\": \"Stone-ground finger millet meets raw Kumaoni jaggery...\",\n      \"ingredients\": \"Finger millet, jaggery, sesame, ghee\",\n      \"features\": [\"No Preservatives\", \"Handmade\", \"Rich in Iron\"],\n      \"badge\": \"Bestseller\",\n      \"emoji\": \"🌾\",\n      \"inStock\": true,\n      \"createdAt\": \"2026-06-01T10:00:00.000Z\",\n      \"updatedAt\": \"2026-06-01T10:00:00.000Z\"\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "GET Products by Category",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:5000/api/products?category=Snacks",
+        "description": "Filter products by category"
+      },
+      "response": [
+        {
+          "name": "200 OK — Filtered by Snacks",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"count\": 1,\n  \"data\": [\n    {\n      \"_id\": \"665f1a2b3c4d5e6f7a8b9c0d\",\n      \"name\": \"Himalayan Millet Crunch Bar\",\n      \"category\": \"Snacks\",\n      \"price\": 199,\n      \"inStock\": true\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "GET Search Products",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:5000/api/products/search?q=millet",
+        "description": "Search products by name, description, or category"
+      },
+      "response": [
+        {
+          "name": "200 OK — Search results for 'millet'",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"count\": 1,\n  \"query\": \"millet\",\n  \"data\": [\n    {\n      \"_id\": \"665f1a2b3c4d5e6f7a8b9c0d\",\n      \"name\": \"Himalayan Millet Crunch Bar\",\n      \"category\": \"Snacks\",\n      \"price\": 199\n    }\n  ]\n}"
+        },
+        {
+          "name": "400 Bad Request — missing query",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"success\": false,\n  \"error\": \"Search query 'q' is required\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "GET Single Product",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:5000/api/products/665f1a2b3c4d5e6f7a8b9c0d",
+        "description": "Fetch a single product by its MongoDB _id"
+      },
+      "response": [
+        {
+          "name": "200 OK — Product found",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"_id\": \"665f1a2b3c4d5e6f7a8b9c0d\",\n    \"name\": \"Himalayan Millet Crunch Bar\",\n    \"category\": \"Snacks\",\n    \"price\": 199,\n    \"weight\": \"200g (pack of 6)\",\n    \"description\": \"Stone-ground finger millet...\",\n    \"ingredients\": \"Finger millet, jaggery, sesame, ghee\",\n    \"features\": [\"No Preservatives\", \"Handmade\", \"Rich in Iron\"],\n    \"badge\": \"Bestseller\",\n    \"emoji\": \"🌾\",\n    \"inStock\": true\n  }\n}"
+        },
+        {
+          "name": "404 Not Found",
+          "status": "Not Found",
+          "code": 404,
+          "body": "{\n  \"success\": false,\n  \"error\": \"Product not found with id 665f1a2b3c4d5e6f7a8b9c0d\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "POST Create Product",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:5000/api/products",
+        "description": "Create a new product",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Pine Needle Tea\",\n  \"category\": \"Beverages\",\n  \"price\": 199,\n  \"weight\": \"50g (25 tea bags)\",\n  \"description\": \"Wild-harvested pine needles from Uttarakhand forests, dried and packed into biodegradable tea bags. Rich in Vitamin C.\",\n  \"ingredients\": \"Pine needles\",\n  \"features\": [\"Wild Harvested\", \"Vitamin C Rich\", \"Caffeine Free\"],\n  \"badge\": \"New\",\n  \"emoji\": \"🌲\",\n  \"inStock\": true\n}"
+        }
+      },
+      "response": [
+        {
+          "name": "201 Created — Product created",
+          "status": "Created",
+          "code": 201,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Product created successfully\",\n  \"data\": {\n    \"_id\": \"665f1a2b3c4d5e6f7a8b9c1e\",\n    \"name\": \"Pine Needle Tea\",\n    \"category\": \"Beverages\",\n    \"price\": 199,\n    \"inStock\": true,\n    \"createdAt\": \"2026-06-10T12:00:00.000Z\"\n  }\n}"
+        },
+        {
+          "name": "400 Bad Request — validation failed",
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"success\": false,\n  \"error\": \"Product name is required, Price is required\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "PUT Update Product",
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:5000/api/products/665f1a2b3c4d5e6f7a8b9c0d",
+        "description": "Fully update a product by id",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Himalayan Millet Crunch Bar\",\n  \"category\": \"Snacks\",\n  \"price\": 219,\n  \"weight\": \"200g (pack of 6)\",\n  \"description\": \"Updated description with new price.\",\n  \"ingredients\": \"Finger millet, jaggery, sesame, ghee\",\n  \"features\": [\"No Preservatives\", \"Handmade\", \"Rich in Iron\"],\n  \"inStock\": true\n}"
+        }
+      },
+      "response": [
+        {
+          "name": "200 OK — Product updated",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Product updated successfully\",\n  \"data\": {\n    \"_id\": \"665f1a2b3c4d5e6f7a8b9c0d\",\n    \"name\": \"Himalayan Millet Crunch Bar\",\n    \"price\": 219,\n    \"updatedAt\": \"2026-06-10T13:00:00.000Z\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "PATCH Partial Update Product",
+      "request": {
+        "method": "PATCH",
+        "url": "http://localhost:5000/api/products/665f1a2b3c4d5e6f7a8b9c0d",
+        "description": "Partially update a product — e.g. toggle inStock or update price only",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"inStock\": false,\n  \"price\": 249\n}"
+        }
+      },
+      "response": [
+        {
+          "name": "200 OK — Partially updated",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Product partially updated\",\n  \"data\": {\n    \"_id\": \"665f1a2b3c4d5e6f7a8b9c0d\",\n    \"name\": \"Himalayan Millet Crunch Bar\",\n    \"price\": 249,\n    \"inStock\": false\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "DELETE Product",
+      "request": {
+        "method": "DELETE",
+        "url": "http://localhost:5000/api/products/665f1a2b3c4d5e6f7a8b9c0d",
+        "description": "Delete a product by id"
+      },
+      "response": [
+        {
+          "name": "200 OK — Product deleted",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"success\": true,\n  \"message\": \"Product 'Himalayan Millet Crunch Bar' deleted successfully\",\n  \"data\": {}\n}"
+        },
+        {
+          "name": "404 Not Found",
+          "status": "Not Found",
+          "code": 404,
+          "body": "{\n  \"success\": false,\n  \"error\": \"Product not found with id 665f1a2b3c4d5e6f7a8b9c0d\"\n}"
+        }
+      ]
+    }
+  ]
+}
