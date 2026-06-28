@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
-    <section className="bg-earth-50 dark:bg-earth-800 overflow-hidden relative transition-colors">
+    <section className="bg-earth-50 overflow-hidden relative">
       {/* Decorative circle */}
       <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-saffron-500 opacity-5 translate-x-1/3 -translate-y-1/3 pointer-events-none" />
 
@@ -17,7 +17,7 @@ export default function Hero() {
 
           {/* Headline */}
           <h1
-            className="text-5xl md:text-6xl text-earth-900 dark:text-earth-50 leading-tight mb-6"
+            className="text-5xl md:text-6xl text-earth-900 leading-tight mb-6"
             style={{ fontFamily: "Georgia, serif" }}
           >
             Authentic Himalayan{" "}
@@ -25,7 +25,7 @@ export default function Hero() {
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg text-earth-700 dark:text-earth-300 leading-relaxed mb-10 max-w-xl">
+          <p className="text-lg text-earth-700 leading-relaxed mb-10 max-w-xl">
             Healthy traditional snacks made with natural ingredients — handcrafted
             in the Kumaon hills, delivered pan-India. No factories. No preservatives.
             Just the mountains.
@@ -47,7 +47,7 @@ export default function Hero() {
           </div>
 
           {/* Trust badges */}
-          <div className="flex flex-wrap gap-6 pt-8 border-t border-earth-200 dark:border-earth-700">
+          <div className="flex flex-wrap gap-6 pt-8 border-t border-earth-200">
             {[
               { icon: "🌿", label: "No Preservatives" },
               { icon: "🤲", label: "Handcrafted" },
@@ -56,7 +56,7 @@ export default function Hero() {
             ].map((b) => (
               <div key={b.label} className="flex items-center gap-2">
                 <span className="text-xl">{b.icon}</span>
-                <span className="text-sm font-medium text-earth-700 dark:text-earth-200">{b.label}</span>
+                <span className="text-sm font-medium text-earth-700">{b.label}</span>
               </div>
             ))}
           </div>

@@ -1,92 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Hero from "../components/Hero.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import Footer from "../components/Footer.jsx";
-
-const products = [
-  {
-    id: 1,
-    name: "Millet Snack Bar",
-    price: 199,
-    weight: "250g",
-    description: "Healthy Himalayan snack made from stone-ground finger millet and raw Kumaoni jaggery. No preservatives, handcrafted in small batches.",
-    emoji: "🌾",
-    badge: "Bestseller",
-    ingredients: "Finger millet, jaggery, sesame, ghee",
-    features: ["No Preservatives", "Handmade", "Rich in Iron"],
-  },
-  {
-    id: 2,
-    name: "Fruit Pickle",
-    price: 149,
-    weight: "500g",
-    description: "Traditional recipe pickle made with Himalayan fruits, mustard oil, and sun-dried mountain spices. Four-generation family recipe.",
-    emoji: "🥭",
-    badge: "Traditional",
-    ingredients: "Mixed fruits, mustard oil, fenugreek, chili",
-    features: ["Traditional Recipe", "No Artificial Color", "Glass Jar"],
-  },
-  {
-    id: 3,
-    name: "Rhododendron Squash",
-    price: 249,
-    weight: "750ml",
-    description: "Handpicked buransh flowers from above 2,000m, slow-cooked into a vivid crimson squash. One part squash, four parts water.",
-    emoji: "🌺",
-    badge: "Seasonal",
-    ingredients: "Rhododendron flowers, sugar, lemon",
-    features: ["Natural Color", "No Artificial Flavors", "Seasonal"],
-  },
-  {
-    id: 4,
-    name: "Black Soybean Sattu",
-    price: 229,
-    weight: "400g",
-    description: "Roasted black soybeans stone-ground with rock salt and cumin. 40g protein per 100g. Instant Himalayan energy drink.",
-    emoji: "⚫",
-    badge: "High Protein",
-    ingredients: "Black soybeans, rock salt, cumin",
-    features: ["40g Protein/100g", "Gluten Free", "Instant"],
-  },
-  {
-    id: 5,
-    name: "Wild Apricot Oil",
-    price: 349,
-    weight: "100ml",
-    description: "Cold-pressed from wild Himalayan apricot kernels at altitude. Rich in oleic acid, used for centuries in Uttarakhand.",
-    emoji: "🍑",
-    badge: "Cold Pressed",
-    ingredients: "Wild apricot kernels",
-    features: ["Cold Pressed", "Pure", "Multi-use"],
-  },
-  {
-    id: 6,
-    name: "Kafal Berry Jam",
-    price: 299,
-    weight: "200g",
-    description: "Kafal berries ripen for just 3 weeks each May. Picked, cooked, and jarred within 24 hours. No pectin, no artificial colour.",
-    emoji: "🍇",
-    badge: "Limited",
-    ingredients: "Kafal berries, sugar, lemon",
-    features: ["No Pectin", "Limited Batch", "Natural"],
-  },
-];
+import { Loader } from "../components/ui/index.js";
+import { getAllProducts } from "../utils/api.js";
 
 export default function Home() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [category, setCategory] = useState("");
+
+  const CATEGORIES = [
+    "All",
+    "Snacks",
+    "Cold-Pressed Oils",
+    "Beverages",
+    "Pickles",
+    "Health Foods",
+    "Preserves",
+  ];
+
+  const fetchProducts = async (cat) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getAllProducts(cat === "All" ? "" : cat);
+      setProducts(res.data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts(category || "All");
+  }, [category]);
+
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-earth-900 transition-colors">
       <Navbar />
 
       <main className="flex-1">
-        {/* Hero section */}
+        {/* Hero */}
         <Hero />
 
         {/* Products section */}
         <section className="py-16 md:py-20 bg-white dark:bg-earth-900">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
+
             {/* Section header */}
-            <div className="text-center mb-12">
+            <div className="text-center mb-10">
               <p className="text-xs font-semibold tracking-widest uppercase text-saffron-500 mb-2">
                 Our Products
               </p>
@@ -102,12 +68,59 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Product grid — responsive */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+            {/* Category filter */}
+            <div className="flex flex-wrap justify-center gap-2 mb-10">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    (category === cat) || (cat === "All" && !category)
+                      ? "bg-saffron-500 text-white"
+                      : "bg-earth-100 dark:bg-earth-700 text-earth-700 dark:text-earth-200 hover:bg-earth-200 dark:hover:bg-earth-600"
+                  }`}
+                >
+                  {cat}
+                </button>
               ))}
             </div>
+
+            {/* Loading state */}
+            {loading && (
+              <div className="py-20">
+                <Loader variant="spinner" size="lg" label="Loading products…" />
+              </div>
+            )}
+
+            {/* Error state */}
+            {!loading && error && (
+              <div className="text-center py-16">
+                <p className="text-red-500 mb-4">⚠ {error}</p>
+                <button
+                  onClick={() => fetchProducts(category || "All")}
+                  className="btn-primary"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
+
+            {/* Empty state */}
+            {!loading && !error && products.length === 0 && (
+              <div className="text-center py-16 text-earth-500 dark:text-earth-400">
+                <p className="text-4xl mb-3">🌿</p>
+                <p>No products found in this category.</p>
+              </div>
+            )}
+
+            {/* Product grid */}
+            {!loading && !error && products.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
