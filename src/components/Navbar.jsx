@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/login", label: "Login" },
   { to: "/ui-showcase", label: "UI Kit" },
 ];
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   return (
     <nav className="bg-white dark:bg-earth-900 border-b border-earth-100 dark:border-earth-700 shadow-sm sticky top-0 z-50">
@@ -47,7 +48,46 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
             <ThemeToggle />
+
+            {/* Auth section */}
+            {user ? (
+              <div className="flex items-center gap-2 ml-2">
+                {user.avatar && (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-7 h-7 rounded-full border border-earth-200"
+                  />
+                )}
+                <span className="text-sm font-medium text-earth-700 dark:text-earth-200">
+                  {user.name.split(" ")[0]}
+                </span>
+                <button
+                  onClick={logout}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium bg-earth-100 dark:bg-earth-700 text-earth-700 dark:text-earth-200 hover:bg-earth-200 dark:hover:bg-earth-600 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 ml-2">
+                <Link
+                  to="/login"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-earth-700 dark:text-earth-200 hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-saffron-500 hover:bg-saffron-600 text-white transition-colors"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+
             <a
               href="https://wa.me/91XXXXXXXXXX?text=Hi%2C%20I%20want%20to%20order%20from%20HimShakti"
               target="_blank"
@@ -93,6 +133,39 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
+            {/* Mobile auth section */}
+            {user ? (
+              <div className="px-4 pt-2 space-y-2">
+                <p className="text-sm text-earth-600 dark:text-earth-300">
+                  Signed in as <strong>{user.name}</strong>
+                </p>
+                <button
+                  onClick={() => { logout(); setMenuOpen(false); }}
+                  className="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium bg-earth-100 dark:bg-earth-700 text-earth-700 dark:text-earth-200"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="px-4 pt-2 flex gap-2">
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex-1 text-center px-4 py-2.5 rounded-lg text-sm font-medium border border-earth-200 dark:border-earth-600 text-earth-700 dark:text-earth-200"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex-1 text-center px-4 py-2.5 rounded-lg text-sm font-medium bg-saffron-500 text-white"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+
             <div className="px-4 pt-2">
               <a
                 href="https://wa.me/91XXXXXXXXXX?text=Hi%2C%20I%20want%20to%20order%20from%20HimShakti"

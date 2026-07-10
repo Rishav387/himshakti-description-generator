@@ -1,64 +1,65 @@
 /**
- * api.js — Centralized API call utility for the HimShakti frontend.
- * All fetch calls to the backend go through here.
+ * api.js — Centralized API utility for HimShakti frontend.
+ * Automatically attaches JWT token from localStorage to all requests.
  */
 
 const BASE_URL = "http://localhost:5000/api";
 
-/**
- * Generic fetch wrapper with error handling
- */
+// Get token from localStorage
+const getToken = () => localStorage.getItem("himshakti-token");
+
+// Generic fetch wrapper — attaches JWT if present
 const request = async (endpoint, options = {}) => {
+  const token = getToken();
+  const headers = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const response = await fetch(`${BASE_URL}${endpoint}`, {
-    headers: { "Content-Type": "application/json" },
+    headers,
     ...options,
   });
 
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error || "Something went wrong");
-  }
-
+  if (!response.ok) throw new Error(data.error || "Something went wrong");
   return data;
 };
 
 // ── Product API calls ──────────────────────────────────────────────────────
 
-/** GET /api/products — fetch all products, optional category filter */
+// GET all products — optional category filter
 export const getAllProducts = (category = "") => {
   const query = category ? `?category=${encodeURIComponent(category)}` : "";
   return request(`/products${query}`);
 };
 
-/** GET /api/products/search?q= — search products */
+// GET search products
 export const searchProducts = (q) =>
   request(`/products/search?q=${encodeURIComponent(q)}`);
 
-/** GET /api/products/:id — fetch single product */
+// GET single product by id
 export const getProductById = (id) => request(`/products/${id}`);
 
-/** POST /api/products — create a new product */
+// POST create product
 export const createProduct = (productData) =>
   request("/products", {
     method: "POST",
     body: JSON.stringify(productData),
   });
 
-/** PUT /api/products/:id — update a product */
+// PUT full update
 export const updateProduct = (id, productData) =>
   request(`/products/${id}`, {
     method: "PUT",
     body: JSON.stringify(productData),
   });
 
-/** PATCH /api/products/:id — partial update (e.g. toggle inStock) */
+// PATCH partial update
 export const patchProduct = (id, fields) =>
   request(`/products/${id}`, {
     method: "PATCH",
     body: JSON.stringify(fields),
   });
 
-/** DELETE /api/products/:id — delete a product */
+// DELETE product
 export const deleteProduct = (id) =>
   request(`/products/${id}`, { method: "DELETE" });
