@@ -7,6 +7,7 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import UIShowcase from "./pages/UIShowcase.jsx";
 import OAuthCallback from "./pages/OAuthCallback.jsx";
+import AIGenerator from "./pages/AIGenerator.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
@@ -25,6 +26,9 @@ export default function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/oauth-callback" element={<OAuthCallback />} />
+
+              {/* AI Feature — public so anyone can try it */}
+              <Route path="/ai-generator" element={<AIGenerator />} />
 
               {/* Protected route 1 — Dashboard */}
               <Route

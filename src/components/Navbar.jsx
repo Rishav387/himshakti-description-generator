@@ -6,8 +6,8 @@ import { useAuth } from "../context/AuthContext.jsx";
 const NAV_LINKS = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
+  { to: "/ai-generator", label: "AI Generator" },
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/ui-showcase", label: "UI Kit" },
 ];
 
 export default function Navbar() {
@@ -134,7 +134,7 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {/* Mobile auth section */}
+            {/* Mobile auth */}
             {user ? (
               <div className="px-4 pt-2 space-y-2">
                 <p className="text-sm text-earth-600 dark:text-earth-300">
