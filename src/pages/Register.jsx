@@ -6,12 +6,12 @@ import { Button, Input } from "../components/ui/index.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useToast } from "../components/ui/Toast.jsx";
 
-export default function Login() {
-  const { login, loginWithGoogle } = useAuth();
+export default function Register() {
+  const { register, loginWithGoogle } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -20,8 +20,11 @@ export default function Login() {
 
   const validate = () => {
     const e = {};
+    if (!form.name.trim()) e.name = "Name is required";
     if (!form.email.trim()) e.email = "Email is required";
     if (!form.password) e.password = "Password is required";
+    if (form.password && form.password.length < 6) e.password = "Password must be at least 6 characters";
+    if (form.password !== form.confirmPassword) e.confirmPassword = "Passwords do not match";
     return e;
   };
 
@@ -31,8 +34,8 @@ export default function Login() {
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setLoading(true);
     try {
-      await login(form.email, form.password);
-      showToast("Welcome back!", "success");
+      await register(form.name, form.email, form.password);
+      showToast("Account created successfully!", "success");
       navigate("/dashboard");
     } catch (err) {
       showToast(err.message, "error");
@@ -49,14 +52,13 @@ export default function Login() {
         <div className="w-full max-w-md">
           <div className="bg-white dark:bg-earth-800 rounded-2xl border border-earth-100 dark:border-earth-700 shadow-sm p-8">
 
-            {/* Header */}
             <div className="text-center mb-8">
               <span className="text-4xl mb-3 block">🌿</span>
               <h1 className="text-3xl text-earth-900 dark:text-earth-50 mb-2" style={{ fontFamily: "Georgia, serif" }}>
-                Welcome back
+                Create account
               </h1>
               <p className="text-sm text-earth-600 dark:text-earth-300">
-                Sign in to your HimShakti account
+                Join HimShakti to manage your products
               </p>
             </div>
 
@@ -71,18 +73,24 @@ export default function Login() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              Continue with Google
+              Sign up with Google
             </button>
 
-            {/* Divider */}
             <div className="flex items-center gap-3 mb-6">
               <div className="flex-1 h-px bg-earth-200 dark:bg-earth-600" />
-              <span className="text-xs text-earth-400">or sign in with email</span>
+              <span className="text-xs text-earth-400">or register with email</span>
               <div className="flex-1 h-px bg-earth-200 dark:bg-earth-600" />
             </div>
 
-            {/* Email/Password form */}
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <Input
+                label="Full Name"
+                name="name"
+                placeholder="Rishav Kumar"
+                value={form.name}
+                onChange={handleChange}
+                error={errors.name}
+              />
               <Input
                 label="Email"
                 name="email"
@@ -96,10 +104,19 @@ export default function Login() {
                 label="Password"
                 name="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="At least 6 characters"
                 value={form.password}
                 onChange={handleChange}
                 error={errors.password}
+              />
+              <Input
+                label="Confirm Password"
+                name="confirmPassword"
+                type="password"
+                placeholder="Repeat your password"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                error={errors.confirmPassword}
               />
               <Button
                 type="submit"
@@ -108,22 +125,17 @@ export default function Login() {
                 disabled={loading}
                 className="w-full mt-2"
               >
-                {loading ? "Signing in..." : "Sign In"}
+                {loading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
 
-            {/* Register link */}
             <p className="text-center text-sm text-earth-500 dark:text-earth-400 mt-6">
-              Don't have an account?{" "}
-              <Link to="/register" className="text-saffron-500 hover:text-saffron-600 font-medium">
-                Create one
+              Already have an account?{" "}
+              <Link to="/login" className="text-saffron-500 hover:text-saffron-600 font-medium">
+                Sign in
               </Link>
             </p>
           </div>
-
-          <p className="text-center text-xs text-earth-400 dark:text-earth-500 mt-5">
-            © 2026 HimShakti Food Processing Unit
-          </p>
         </div>
       </main>
 
