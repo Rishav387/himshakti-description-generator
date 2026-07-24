@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
 import { Button, Input, Modal, Loader } from "../components/ui/index.js";
 import { useToast } from "../components/ui/Toast.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import {
   getAllProducts,
   createProduct,
@@ -24,32 +25,27 @@ const EMPTY_FORM = {
 };
 
 const CATEGORIES = [
-  "Snacks",
-  "Cold-Pressed Oils",
-  "Beverages",
-  "Pickles",
-  "Health Foods",
-  "Preserves",
-  "Other",
+  "Snacks", "Cold-Pressed Oils", "Beverages",
+  "Pickles", "Health Foods", "Preserves", "Other",
 ];
 
 export default function Dashboard() {
   const { showToast } = useToast();
+  const { user } = useAuth();
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  // Modal state
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // Form state
   const [form, setForm] = useState(EMPTY_FORM);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // ── Fetch all products (READ) ────────────────────────────────────────────
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const res = await getAllProducts();
@@ -59,11 +55,9 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchProducts();
   }, []);
+
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   // ── Create (POST) ────────────────────────────────────────────────────────
   const handleCreate = async () => {
@@ -159,27 +153,58 @@ export default function Dashboard() {
       <main className="flex-1 py-10 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
-          {/* Header */}
+          {/* Header with logged-in user name */}
           <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
             <div>
               <p className="text-xs font-semibold tracking-widest uppercase text-saffron-500 mb-1">
                 Admin Panel
               </p>
-              <h1 className="text-3xl text-earth-900 dark:text-earth-50" style={{ fontFamily: "Georgia, serif" }}>
+              <h1
+                className="text-3xl text-earth-900 dark:text-earth-50"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
                 Product Dashboard
               </h1>
-              <p className="text-sm text-earth-500 dark:text-earth-400 mt-1">
-                {products.length} products in database · Full CRUD via MongoDB
-              </p>
+              {user && (
+                <p className="text-sm text-earth-500 dark:text-earth-400 mt-1">
+                  Welcome back, <span className="font-semibold text-saffron-500">{user.name}</span> ·{" "}
+                  {products.length} products in database
+                </p>
+              )}
             </div>
-            <Button variant="primary" onClick={() => { setForm(EMPTY_FORM); setCreateOpen(true); }}>
+            <Button
+              variant="primary"
+              onClick={() => { setForm(EMPTY_FORM); setCreateOpen(true); }}
+            >
               + Add Product
             </Button>
           </div>
 
           {/* READ — Product table */}
           {loading ? (
-            <div className="py-20"><Loader variant="spinner" size="lg" label="Loading products…" /></div>
+            <div className="py-20">
+              <Loader variant="spinner" size="lg" label="Loading products…" />
+            </div>
+          ) : products.length === 0 ? (
+            /* Empty state */
+            <div className="text-center py-20 bg-earth-50 dark:bg-earth-800 rounded-2xl border border-earth-100 dark:border-earth-700">
+              <span className="text-6xl mb-4 block">📦</span>
+              <h3
+                className="text-xl text-earth-800 dark:text-earth-100 mb-2"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                No products yet
+              </h3>
+              <p className="text-earth-500 dark:text-earth-400 text-sm mb-6">
+                Add your first HimShakti product to get started.
+              </p>
+              <Button
+                variant="primary"
+                onClick={() => { setForm(EMPTY_FORM); setCreateOpen(true); }}
+              >
+                + Add First Product
+              </Button>
+            </div>
           ) : (
             <div className="bg-white dark:bg-earth-800 rounded-2xl border border-earth-100 dark:border-earth-700 overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
@@ -187,7 +212,10 @@ export default function Dashboard() {
                   <thead className="bg-earth-50 dark:bg-earth-700 border-b border-earth-100 dark:border-earth-600">
                     <tr>
                       {["Product", "Category", "Price", "Stock", "Actions"].map((h) => (
-                        <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-earth-600 dark:text-earth-300 uppercase tracking-wide">
+                        <th
+                          key={h}
+                          className="text-left px-5 py-3 text-xs font-semibold text-earth-600 dark:text-earth-300 uppercase tracking-wide"
+                        >
                           {h}
                         </th>
                       ))}
@@ -195,7 +223,10 @@ export default function Dashboard() {
                   </thead>
                   <tbody className="divide-y divide-earth-100 dark:divide-earth-700">
                     {products.map((p) => (
-                      <tr key={p._id} className="hover:bg-earth-50 dark:hover:bg-earth-700/50 transition-colors">
+                      <tr
+                        key={p._id}
+                        className="hover:bg-earth-50 dark:hover:bg-earth-700/50 transition-colors"
+                      >
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-2">
                             <span className="text-xl">{p.emoji}</span>
@@ -208,15 +239,21 @@ export default function Dashboard() {
                         <td className="px-5 py-3 text-earth-600 dark:text-earth-300">{p.category}</td>
                         <td className="px-5 py-3 font-semibold text-earth-900 dark:text-earth-50">₹{p.price}</td>
                         <td className="px-5 py-3">
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${p.inStock ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${p.inStock ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"}`}>
                             {p.inStock ? "In Stock" : "Out of Stock"}
                           </span>
                         </td>
                         <td className="px-5 py-3">
                           <div className="flex gap-2">
-                            <Button variant="secondary" size="sm" onClick={() => openEdit(p)}>Edit</Button>
-                            <Button variant="outline" size="sm" onClick={() => openDelete(p)}
-                              className="border-red-300 text-red-500 hover:bg-red-50">
+                            <Button variant="secondary" size="sm" onClick={() => openEdit(p)}>
+                              Edit
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openDelete(p)}
+                              className="border-red-300 text-red-500 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                            >
                               Delete
                             </Button>
                           </div>
@@ -256,13 +293,18 @@ export default function Dashboard() {
       {/* DELETE Confirm Modal */}
       <Modal isOpen={deleteOpen} onClose={() => setDeleteOpen(false)} title="Delete Product">
         <p className="text-sm text-earth-600 dark:text-earth-300 mb-5">
-          Are you sure you want to delete <strong>{selectedProduct?.name}</strong>?
+          Are you sure you want to delete{" "}
+          <strong className="text-earth-900 dark:text-earth-50">{selectedProduct?.name}</strong>?
           This action cannot be undone.
         </p>
         <div className="flex gap-3 justify-end">
           <Button variant="secondary" onClick={() => setDeleteOpen(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleDelete} disabled={submitting}
-            className="bg-red-500 hover:bg-red-600">
+          <Button
+            variant="primary"
+            onClick={handleDelete}
+            disabled={submitting}
+            className="bg-red-500 hover:bg-red-600 focus:ring-red-400"
+          >
             {submitting ? "Deleting…" : "Yes, Delete"}
           </Button>
         </div>
@@ -273,15 +315,18 @@ export default function Dashboard() {
   );
 }
 
-// ── Shared form for Create and Edit ─────────────────────────────────────────
 function ProductForm({ form, onChange }) {
   return (
     <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
       <Input label="Product Name *" name="name" value={form.name} onChange={onChange} placeholder="e.g. Himalayan Millet Bar" />
       <div>
         <label className="block text-sm font-semibold text-earth-800 dark:text-earth-100 mb-1.5">Category *</label>
-        <select name="category" value={form.category} onChange={onChange}
-          className="w-full px-4 py-2.5 rounded-xl text-sm border border-earth-200 dark:border-earth-600 bg-earth-50 dark:bg-earth-800 text-earth-900 dark:text-earth-50 focus:outline-none focus:ring-2 focus:ring-saffron-400">
+        <select
+          name="category"
+          value={form.category}
+          onChange={onChange}
+          className="w-full px-4 py-2.5 rounded-xl text-sm border border-earth-200 dark:border-earth-600 bg-earth-50 dark:bg-earth-800 text-earth-900 dark:text-earth-50 focus:outline-none focus:ring-2 focus:ring-saffron-400"
+        >
           {["Snacks","Cold-Pressed Oils","Beverages","Pickles","Health Foods","Preserves","Other"].map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
