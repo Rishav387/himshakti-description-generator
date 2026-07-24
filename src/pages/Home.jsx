@@ -5,6 +5,35 @@ import ProductCard from "../components/ProductCard.jsx";
 import Footer from "../components/Footer.jsx";
 import { Loader } from "../components/ui/index.js";
 import { getAllProducts } from "../utils/api.js";
+import rhodoSquash from "../assets/images/RhododendronSquash.png";
+import alooPickle from "../assets/images/PahadiAlooPickle.png";
+import soybeanSattu from "../assets/images/BlackSoybeanSattu.png";
+import milletBar from "../assets/images/HimalayanMilletCrunchBar.png";
+import tulsiHoney from "../assets/images/tulsi-honey.png";
+import kafalJam from "../assets/images/kafal-berry-jam.png";
+
+const PRODUCT_IMAGES = {
+  "Pine Needle Tea": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=300&fit=crop&auto=format",
+  "Wild Apricot Kernel Oil": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=300&fit=crop&auto=format",
+  "Rhododendron Squash": rhodoSquash,
+  "Pahadi Aloo Pickle": alooPickle,
+  "Black Soybean Sattu": soybeanSattu,
+  "Himalayan Millet Crunch Bar": milletBar,
+  "Himalayan Tulsi Honey": tulsiHoney,
+  "Kafal Berry Jam": kafalJam,
+};
+
+const CATEGORY_IMAGES = {
+  "Snacks": "https://images.unsplash.com/photo-1559181567-c3190bba0ecd?w=400&h=300&fit=crop&auto=format",
+  "Cold-Pressed Oils": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=300&fit=crop&auto=format",
+  "Beverages": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=300&fit=crop&auto=format",
+  "Pickles": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop&auto=format",
+  "Health Foods": "https://images.unsplash.com/photo-1515543904379-3d757398d905?w=400&h=300&fit=crop&auto=format",
+  "Preserves": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=300&fit=crop&auto=format",
+  "Other": "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=400&h=300&fit=crop&auto=format",
+};
+
+const CATEGORIES = ["All", "Snacks", "Cold-Pressed Oils", "Beverages", "Pickles", "Health Foods", "Preserves"];
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -12,22 +41,16 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [category, setCategory] = useState("");
 
-  const CATEGORIES = [
-    "All",
-    "Snacks",
-    "Cold-Pressed Oils",
-    "Beverages",
-    "Pickles",
-    "Health Foods",
-    "Preserves",
-  ];
-
   const fetchProducts = async (cat) => {
     setLoading(true);
     setError(null);
     try {
       const res = await getAllProducts(cat === "All" ? "" : cat);
-      setProducts(res.data);
+      const withImages = res.data.map((p) => ({
+        ...p,
+        image: PRODUCT_IMAGES[p.name] || CATEGORY_IMAGES[p.category] || null,
+      }));
+      setProducts(withImages);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -35,19 +58,15 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    fetchProducts(category || "All");
-  }, [category]);
+  useEffect(() => { fetchProducts(category || "All"); }, [category]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-earth-900 transition-colors">
       <Navbar />
 
       <main className="flex-1">
-        {/* Hero */}
         <Hero />
 
-        {/* Products section */}
         <section className="py-16 md:py-20 bg-white dark:bg-earth-900">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
@@ -95,10 +114,14 @@ export default function Home() {
             {/* Error state */}
             {!loading && error && (
               <div className="text-center py-16">
-                <p className="text-red-500 mb-4">⚠ {error}</p>
+                <span className="text-5xl mb-4 block">⚠️</span>
+                <p className="text-red-500 dark:text-red-400 mb-4 font-medium">{error}</p>
+                <p className="text-earth-500 dark:text-earth-400 text-sm mb-6">
+                  Make sure the backend server is running at localhost:5000
+                </p>
                 <button
                   onClick={() => fetchProducts(category || "All")}
-                  className="btn-primary"
+                  className="bg-saffron-500 hover:bg-saffron-600 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors"
                 >
                   Try Again
                 </button>
@@ -107,15 +130,29 @@ export default function Home() {
 
             {/* Empty state */}
             {!loading && !error && products.length === 0 && (
-              <div className="text-center py-16 text-earth-500 dark:text-earth-400">
-                <p className="text-4xl mb-3">🌿</p>
-                <p>No products found in this category.</p>
+              <div className="text-center py-20">
+                <span className="text-6xl mb-4 block">🌿</span>
+                <h3
+                  className="text-xl text-earth-800 dark:text-earth-100 mb-2"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  No products in this category
+                </h3>
+                <p className="text-earth-500 dark:text-earth-400 text-sm mb-6">
+                  Try selecting a different category or check back later.
+                </p>
+                <button
+                  onClick={() => setCategory("")}
+                  className="bg-saffron-500 hover:bg-saffron-600 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors"
+                >
+                  View All Products
+                </button>
               </div>
             )}
 
             {/* Product grid */}
             {!loading && !error && products.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}
