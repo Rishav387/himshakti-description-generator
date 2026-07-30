@@ -5,7 +5,7 @@ import { Button, Input, Modal, Loader } from "../components/ui/index.js";
 import { useToast } from "../components/ui/Toast.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import {
-  getAllProducts,
+  getMyProducts,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -24,11 +24,6 @@ const EMPTY_FORM = {
   inStock: true,
 };
 
-const CATEGORIES = [
-  "Snacks", "Cold-Pressed Oils", "Beverages",
-  "Pickles", "Health Foods", "Preserves", "Other",
-];
-
 export default function Dashboard() {
   const { showToast } = useToast();
   const { user } = useAuth();
@@ -44,22 +39,22 @@ export default function Dashboard() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // ── Fetch all products (READ) ────────────────────────────────────────────
-  const fetchProducts = useCallback(async () => {
+  // ── Fetch only MY products ───────────────────────────────────────────────
+  const fetchMyProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getAllProducts();
+      const res = await getMyProducts();
       setProducts(res.data);
     } catch (err) {
-      showToast("Failed to load products: " + err.message, "error");
+      showToast("Failed to load your products: " + err.message, "error");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { fetchProducts(); }, [fetchProducts]);
+  useEffect(() => { fetchMyProducts(); }, [fetchMyProducts]);
 
-  // ── Create (POST) ────────────────────────────────────────────────────────
+  // ── Create ───────────────────────────────────────────────────────────────
   const handleCreate = async () => {
     if (!form.name || !form.price || !form.weight || !form.description || !form.ingredients) {
       showToast("Please fill in all required fields", "error");
@@ -76,7 +71,7 @@ export default function Dashboard() {
       showToast("Product created successfully!", "success");
       setCreateOpen(false);
       setForm(EMPTY_FORM);
-      fetchProducts();
+      fetchMyProducts();
     } catch (err) {
       showToast("Create failed: " + err.message, "error");
     } finally {
@@ -84,7 +79,7 @@ export default function Dashboard() {
     }
   };
 
-  // ── Update (PUT) ─────────────────────────────────────────────────────────
+  // ── Update ───────────────────────────────────────────────────────────────
   const openEdit = (product) => {
     setSelectedProduct(product);
     setForm({
@@ -113,7 +108,7 @@ export default function Dashboard() {
       await updateProduct(selectedProduct._id, payload);
       showToast("Product updated successfully!", "success");
       setEditOpen(false);
-      fetchProducts();
+      fetchMyProducts();
     } catch (err) {
       showToast("Update failed: " + err.message, "error");
     } finally {
@@ -133,7 +128,7 @@ export default function Dashboard() {
       await deleteProduct(selectedProduct._id);
       showToast(`"${selectedProduct.name}" deleted`, "success");
       setDeleteOpen(false);
-      fetchProducts();
+      fetchMyProducts();
     } catch (err) {
       showToast("Delete failed: " + err.message, "error");
     } finally {
@@ -153,7 +148,7 @@ export default function Dashboard() {
       <main className="flex-1 py-10 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
-          {/* Header with logged-in user name */}
+          {/* Header */}
           <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
             <div>
               <p className="text-xs font-semibold tracking-widest uppercase text-saffron-500 mb-1">
@@ -163,12 +158,13 @@ export default function Dashboard() {
                 className="text-3xl text-earth-900 dark:text-earth-50"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                Product Dashboard
+                My Product Dashboard
               </h1>
               {user && (
                 <p className="text-sm text-earth-500 dark:text-earth-400 mt-1">
-                  Welcome back, <span className="font-semibold text-saffron-500">{user.name}</span> ·{" "}
-                  {products.length} products in database
+                  Welcome back,{" "}
+                  <span className="font-semibold text-saffron-500">{user.name}</span>{" "}
+                  · {products.length} product{products.length !== 1 ? "s" : ""} in your catalog
                 </p>
               )}
             </div>
@@ -180,10 +176,18 @@ export default function Dashboard() {
             </Button>
           </div>
 
-          {/* READ — Product table */}
+          {/* Info banner */}
+          <div className="bg-saffron-50 dark:bg-saffron-900/20 border border-saffron-100 dark:border-saffron-800 rounded-xl px-5 py-3 mb-6 flex items-center gap-3">
+            <span className="text-saffron-500 text-lg">🔒</span>
+            <p className="text-sm text-saffron-700 dark:text-saffron-300">
+              You are viewing and managing only <strong>your own products</strong>. Other users cannot see or modify your catalog.
+            </p>
+          </div>
+
+          {/* Loading */}
           {loading ? (
             <div className="py-20">
-              <Loader variant="spinner" size="lg" label="Loading products…" />
+              <Loader variant="spinner" size="lg" label="Loading your products…" />
             </div>
           ) : products.length === 0 ? (
             /* Empty state */
@@ -196,7 +200,7 @@ export default function Dashboard() {
                 No products yet
               </h3>
               <p className="text-earth-500 dark:text-earth-400 text-sm mb-6">
-                Add your first HimShakti product to get started.
+                You haven't added any products to your catalog yet. Add your first one to get started.
               </p>
               <Button
                 variant="primary"
@@ -206,6 +210,7 @@ export default function Dashboard() {
               </Button>
             </div>
           ) : (
+            /* Product table */
             <div className="bg-white dark:bg-earth-800 rounded-2xl border border-earth-100 dark:border-earth-700 overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -239,7 +244,11 @@ export default function Dashboard() {
                         <td className="px-5 py-3 text-earth-600 dark:text-earth-300">{p.category}</td>
                         <td className="px-5 py-3 font-semibold text-earth-900 dark:text-earth-50">₹{p.price}</td>
                         <td className="px-5 py-3">
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${p.inStock ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"}`}>
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                            p.inStock
+                              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                              : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+                          }`}>
                             {p.inStock ? "In Stock" : "Out of Stock"}
                           </span>
                         </td>
@@ -252,7 +261,7 @@ export default function Dashboard() {
                               variant="outline"
                               size="sm"
                               onClick={() => openDelete(p)}
-                              className="border-red-300 text-red-500 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                              className="border-red-300 text-red-500 hover:bg-red-50 dark:border-red-700 dark:text-red-400"
                             >
                               Delete
                             </Button>
@@ -321,12 +330,8 @@ function ProductForm({ form, onChange }) {
       <Input label="Product Name *" name="name" value={form.name} onChange={onChange} placeholder="e.g. Himalayan Millet Bar" />
       <div>
         <label className="block text-sm font-semibold text-earth-800 dark:text-earth-100 mb-1.5">Category *</label>
-        <select
-          name="category"
-          value={form.category}
-          onChange={onChange}
-          className="w-full px-4 py-2.5 rounded-xl text-sm border border-earth-200 dark:border-earth-600 bg-earth-50 dark:bg-earth-800 text-earth-900 dark:text-earth-50 focus:outline-none focus:ring-2 focus:ring-saffron-400"
-        >
+        <select name="category" value={form.category} onChange={onChange}
+          className="w-full px-4 py-2.5 rounded-xl text-sm border border-earth-200 dark:border-earth-600 bg-earth-50 dark:bg-earth-800 text-earth-900 dark:text-earth-50 focus:outline-none focus:ring-2 focus:ring-saffron-400">
           {["Snacks","Cold-Pressed Oils","Beverages","Pickles","Health Foods","Preserves","Other"].map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}

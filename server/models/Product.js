@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 /**
  * Product Schema
- * Represents a single HimShakti food product in the catalog.
+ * Each product is linked to the user who created it via createdBy.
+ * Public routes show all products; Dashboard shows only user's own products.
  */
 const productSchema = new mongoose.Schema(
   {
@@ -64,13 +65,19 @@ const productSchema = new mongoose.Schema(
       type: String,
       default: "+91XXXXXXXXXX",
     },
+    // Links product to the user who created it
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null, // null for seeded/global products
+    },
   },
   {
-    timestamps: true, // adds createdAt and updatedAt automatically
+    timestamps: true,
   }
 );
 
-// Index for search by name and category
+// Text index for search endpoint
 productSchema.index({ name: "text", description: "text" });
 
 module.exports = mongoose.model("Product", productSchema);
