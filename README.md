@@ -1,109 +1,138 @@
 # HimShakti — AI-Enhanced D2C Food Product Platform
 
-> **TBI-GEU SIP 2026** · AI-Assisted Full Stack Web Development Track  
-> **Week 2 Deliverable:** Frontend Skeleton
+> **TBI-GEU SIP 2026** · AI-Assisted Full Stack Web Development Track
+> **Intern:** Rishav Kumar · **ID:** TBI-26100016
 
-A React + Tailwind CSS web platform for HimShakti Food Processing Unit, Uttarakhand — combining a D2C product landing page with an AI-powered description and marketing tool (coming in Week 3+).
+A full-stack Direct-to-Consumer web platform for HimShakti Food Processing Unit, Uttarakhand — featuring a product catalog, WhatsApp ordering, JWT authentication, Google OAuth, and an AI-powered product description generator using Groq Llama.
+
+---
+
+## 🌐 Live Deployment
+
+| Layer | URL |
+|---|---|
+| **Frontend (Vercel)** | https://himshakti.vercel.app *(update after deployment)* |
+| **Backend API (Render)** | https://himshakti-api.onrender.com *(update after deployment)* |
+| **GitHub Repository** | https://github.com/Rishav387/himshakti-description-generator |
 
 ---
 
 ## Tech Stack
 
-| Layer      | Technology                        |
-|------------|-----------------------------------|
-| Frontend   | React 18 + Vite                   |
-| Styling    | Tailwind CSS v3                   |
-| Routing    | React Router DOM v6               |
-| AI (W3+)   | Gemini API (planned)              |
-| Deployment | Vercel / Netlify (planned)        |
+| Layer | Technology |
+|---|---|
+| Frontend | React 18 + Vite + Tailwind CSS v3 |
+| Routing | React Router DOM v6 |
+| Backend | Node.js + Express.js |
+| Database | MongoDB Atlas (M0 Free Tier) |
+| ODM | Mongoose v8 |
+| Auth | JWT + bcryptjs + Passport.js (Google OAuth) |
+| AI | Groq Inference API (llama-3.3-70b-versatile) |
+| Deployment | Vercel (frontend) + Render (backend) |
 
 ---
 
-## Folder Structure
+## Features
 
-```
-src/
-├── components/
-│   ├── Navbar.jsx       ← Sticky nav with mobile hamburger + theme toggle
-│   ├── Hero.jsx         ← Landing hero section
-│   ├── ProductCard.jsx  ← Reusable product card with WhatsApp CTA
-│   ├── Footer.jsx       ← Site-wide footer
-│   ├── ThemeToggle.jsx  ← Dark/light mode toggle button
-│   └── ui/              ← Component library (Week 3)
-│       ├── Button.jsx
-│       ├── Input.jsx
-│       ├── Modal.jsx
-│       ├── Toast.jsx
-│       ├── Loader.jsx
-│       └── index.js     ← Barrel export
-├── context/
-│   └── ThemeContext.jsx ← Dark/light mode provider (localStorage persisted)
-├── pages/
-│   ├── Home.jsx         ← / (Navbar + Hero + Product Grid + Footer)
-│   ├── About.jsx        ← /about
-│   ├── Dashboard.jsx    ← /dashboard
-│   ├── Login.jsx        ← /login
-│   └── UIShowcase.jsx   ← /ui-showcase — demo of all 5 UI components
-├── App.jsx              ← Router + ThemeProvider + ToastProvider
-├── main.jsx             ← Entry point
-└── index.css            ← Tailwind directives + global styles + toast animation
-```
+- **D2C Landing Page** — product catalog with real images, category filtering, WhatsApp order CTAs
+- **Product Catalog** — 6+ Himalayan food products with ingredients, features, pricing
+- **Authentication** — register, login, logout, Google OAuth, JWT-protected routes
+- **Product Dashboard** — full CRUD (create, read, update, delete) scoped to logged-in user
+- **AI Description Generator** — generates tone-aware e-commerce copy using Groq Llama model
+- **Dark / Light Mode** — persisted in localStorage
+- **Responsive** — works on mobile (375px), tablet (768px), and desktop (1440px)
 
 ---
 
-## Setup Instructions
+## How to Run Locally
 
-### 1. Install dependencies
+### Prerequisites
+- Node.js v18+
+- MongoDB Community Server (local) OR MongoDB Atlas account
+
+### Frontend
 ```bash
+git clone https://github.com/Rishav387/himshakti-description-generator.git
+cd himshakti-description-generator
 npm install
-```
-
-### 2. Start dev server
-```bash
 npm run dev
 ```
-Opens at: **http://localhost:5173**
+Opens at: http://localhost:5173
 
-### 3. Build for production
+### Backend
 ```bash
-npm run build
+cd server
+npm install
+cp .env.example .env
+# Fill in MONGODB_URI, JWT_SECRET, GROQ_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+npm run dev
+```
+Runs at: http://localhost:5000
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| GET | `/api/products` | Public | All products |
+| GET | `/api/products/search?q=` | Public | Search products |
+| GET | `/api/products/my/list` | Required | My products only |
+| POST | `/api/products` | Required | Create product |
+| PUT | `/api/products/:id` | Required | Update product |
+| DELETE | `/api/products/:id` | Required | Delete product |
+| POST | `/api/auth/register` | Public | Register user |
+| POST | `/api/auth/login` | Public | Login user |
+| GET | `/api/auth/me` | Required | Get profile |
+| GET | `/api/auth/google` | Public | Google OAuth |
+| POST | `/api/ai/generate-description` | Public | Generate AI description |
+
+---
+
+## Environment Variables
+
+### Backend (`server/.env`)
+```
+PORT=5000
+MONGODB_URI=mongodb+srv://...
+NODE_ENV=production
+JWT_SECRET=...
+JWT_EXPIRES_IN=7d
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GROQ_API_KEY=...
+SERVER_URL=https://your-api.onrender.com
+CLIENT_URL=https://your-app.vercel.app
+```
+
+### Frontend (`.env` or Vercel dashboard)
+```
+VITE_API_URL=https://your-api.onrender.com/api
 ```
 
 ---
 
-## Pages & Routes
+## Known Limitations on Free Tier
 
-| Route          | Page         | Description                          |
-|----------------|--------------|---------------------------------------|
-| `/`            | Home         | Hero + 6 product cards                |
-| `/about`       | About        | Brand story and values                |
-| `/dashboard`   | Dashboard    | Admin panel (AI tools — coming W3+)   |
-| `/login`       | Login        | Admin login (auth — coming later)     |
-| `/ui-showcase` | UI Showcase  | Live demo of the component library    |
+| Service | Limitation |
+|---|---|
+| **Render (backend)** | Free tier spins down after 15 minutes of inactivity. First request after idle takes 30–60 seconds to wake up. |
+| **MongoDB Atlas M0** | 512MB storage limit, shared cluster, no dedicated RAM. |
+| **Groq API** | Free tier allows 30 requests/minute and 14,400 requests/day on llama-3.3-70b-versatile. |
+| **Vercel** | 100GB bandwidth/month on free tier — more than sufficient for this project. |
 
 ---
 
-## Week 2 Checklist
+## Week-by-Week Development
 
-- [x] Navbar, Hero, ProductCard, Footer in `/components`
-- [x] 4 page routes with Navbar + Footer on each
-- [x] ProductCard displayed 6× in responsive grid
-- [x] Mobile responsive — no horizontal scroll
-- [x] Tailwind CSS used throughout
-
-## Week 3 Checklist
-
-- [x] Figma lo-fi wireframes — 5+ screens (see Figma link in submission)
-- [x] Component library in `/components/ui/`: Button, Input, Modal, Toast, Loader
-- [x] `index.js` barrel export for clean imports
-- [x] JSDoc prop documentation on every component
-- [x] All 5 components used together on `/ui-showcase` demo page
-- [x] Dark/light mode toggle — Tailwind `dark:` classes + React Context + localStorage
-- [x] Responsive verified at 375px / 768px / 1440px
-
-## Roadmap
-
-- **Week 4** — Gemini API: AI Product Description Generator
-- **Week 5** — AI Marketing Caption Generator
-- **Week 6** — Product Manager (CRUD via JSON/localStorage)
-- **Week 7** — Deployment on Vercel + final polish
+| Week | Focus | Key Deliverable |
+|---|---|---|
+| 1 | Project planning | Brief, sector selection |
+| 2 | Frontend skeleton | React + Tailwind + 4 pages |
+| 3 | UI/UX & components | Component library + dark mode |
+| 4 | REST API | 7 CRUD endpoints |
+| 5 | Database integration | Full CRUD dashboard |
+| 6 | Authentication | JWT + Google OAuth |
+| 7 | AI integration | Groq Llama description generator |
+| 8 | Frontend polish | Images, empty states, error boundary |
+| 9 | Deployment | Vercel + Render + MongoDB Atlas |
