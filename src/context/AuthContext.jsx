@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext(undefined);
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -21,7 +21,6 @@ export function AuthProvider({ children }) {
         if (data.success) {
           setUser(data.user);
         } else {
-          // Token invalid — clear it
           localStorage.removeItem("himshakti-token");
           setToken(null);
         }
@@ -69,8 +68,12 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // Uses backend URL for Google OAuth redirect
   const loginWithGoogle = () => {
-    window.location.href = `${BASE_URL}/auth/google`;
+    const backendUrl = import.meta.env.VITE_API_URL
+      ? import.meta.env.VITE_API_URL.replace("/api", "")
+      : "http://localhost:5000";
+    window.location.href = `${backendUrl}/api/auth/google`;
   };
 
   return (
