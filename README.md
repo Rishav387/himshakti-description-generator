@@ -1,138 +1,238 @@
-# HimShakti — AI-Enhanced D2C Food Product Platform
+# 🌿 HimShakti — AI-Enhanced D2C Food Product Platform
 
-> **TBI-GEU SIP 2026** · AI-Assisted Full Stack Web Development Track
-> **Intern:** Rishav Kumar · **ID:** TBI-26100016
-
-A full-stack Direct-to-Consumer web platform for HimShakti Food Processing Unit, Uttarakhand — featuring a product catalog, WhatsApp ordering, JWT authentication, Google OAuth, and an AI-powered product description generator using Groq Llama.
+> A full-stack Direct-to-Consumer platform for HimShakti Food Processing Unit, Uttarakhand — featuring a product catalog, WhatsApp ordering, JWT + Google OAuth authentication, user-scoped CRUD dashboard, and an AI-powered product description generator using Groq Llama.
 
 ---
 
-## 🌐 Live Deployment
+## 🌐 Live Demo
 
-| Layer | URL |
-|---|---|
-| **Frontend (Vercel)** | https://himshakti.vercel.app *(update after deployment)* |
-| **Backend API (Render)** | https://himshakti-api.onrender.com *(update after deployment)* |
-| **GitHub Repository** | https://github.com/Rishav387/himshakti-description-generator |
+**Frontend:** https://himshakti-description-generator.vercel.app
+
+**Backend API:** https://himshakti-api.onrender.com
+
+> ⚠️ Backend runs on Render free tier — first request after 15 min idle takes 30-60 sec to wake up.
 
 ---
 
-## Tech Stack
+## 🎥 Demo Video
+
+> [YouTube Unlisted Link — to be added after recording]
+
+---
+
+## 📸 Screenshots
+
+### Home Page — Product Catalog
+![Home Page](https://himshakti-description-generator.vercel.app/og-home.png)
+
+### AI Generator — Product Description
+![AI Generator](https://himshakti-description-generator.vercel.app/og-ai.png)
+
+### Dashboard — CRUD Management
+![Dashboard](https://himshakti-description-generator.vercel.app/og-dashboard.png)
+
+---
+
+## ✨ Features
+
+- **Product Catalog** — 6+ Himalayan food products with real images, category filtering, WhatsApp order CTAs
+- **AI Description Generator** — Enter product details, choose a tone (Premium / Traditional / Health-Focused), get AI-generated e-commerce copy powered by Groq Llama
+- **Authentication** — Register, login, logout with JWT sessions + Google OAuth
+- **Protected Dashboard** — Full CRUD (create, read, update, delete) scoped to logged-in user only
+- **Dark / Light Mode** — Persisted in localStorage across sessions
+- **Responsive** — Works on mobile (375px), tablet (768px), desktop (1440px)
+- **Error Boundary** — Catches unexpected React errors gracefully
+
+---
+
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |---|---|
 | Frontend | React 18 + Vite + Tailwind CSS v3 |
 | Routing | React Router DOM v6 |
 | Backend | Node.js + Express.js |
-| Database | MongoDB Atlas (M0 Free Tier) |
-| ODM | Mongoose v8 |
+| Database | MongoDB Atlas (M0 Free) + Mongoose v8 |
 | Auth | JWT + bcryptjs + Passport.js (Google OAuth) |
 | AI | Groq Inference API (llama-3.3-70b-versatile) |
 | Deployment | Vercel (frontend) + Render (backend) |
 
 ---
 
-## Features
-
-- **D2C Landing Page** — product catalog with real images, category filtering, WhatsApp order CTAs
-- **Product Catalog** — 6+ Himalayan food products with ingredients, features, pricing
-- **Authentication** — register, login, logout, Google OAuth, JWT-protected routes
-- **Product Dashboard** — full CRUD (create, read, update, delete) scoped to logged-in user
-- **AI Description Generator** — generates tone-aware e-commerce copy using Groq Llama model
-- **Dark / Light Mode** — persisted in localStorage
-- **Responsive** — works on mobile (375px), tablet (768px), and desktop (1440px)
-
----
-
-## How to Run Locally
+## 🚀 Setup Instructions
 
 ### Prerequisites
 - Node.js v18+
-- MongoDB Community Server (local) OR MongoDB Atlas account
+- MongoDB Community Server OR MongoDB Atlas account
+- Groq API key (free at console.groq.com)
 
-### Frontend
+### 1. Clone the repository
 ```bash
 git clone https://github.com/Rishav387/himshakti-description-generator.git
 cd himshakti-description-generator
-npm install
-npm run dev
 ```
-Opens at: http://localhost:5173
 
-### Backend
+### 2. Install frontend dependencies
+```bash
+npm install
+```
+
+### 3. Install backend dependencies
 ```bash
 cd server
 npm install
-cp .env.example .env
-# Fill in MONGODB_URI, JWT_SECRET, GROQ_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+```
+
+### 4. Configure environment variables
+```bash
+cp server/.env.example server/.env
+```
+
+Fill in `server/.env`:
+```
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/himshakti
+NODE_ENV=development
+JWT_SECRET=your_jwt_secret_min_32_chars
+JWT_EXPIRES_IN=7d
+GROQ_API_KEY=your_groq_api_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+SERVER_URL=http://localhost:5000
+CLIENT_URL=http://localhost:5173
+```
+
+Create `.env` in project root:
+```
+VITE_API_URL=http://localhost:5000/api
+```
+
+### 5. Seed the database
+```bash
+cd server
+node seed.js
+```
+
+### 6. Start both servers
+```bash
+# Terminal 1 — Backend
+cd server && npm run dev
+
+# Terminal 2 — Frontend
 npm run dev
 ```
-Runs at: http://localhost:5000
+
+Frontend: http://localhost:5173
+Backend: http://localhost:5000
 
 ---
 
-## API Endpoints
+## 📡 API Documentation
+
+### Auth Endpoints
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/api/products` | Public | All products |
-| GET | `/api/products/search?q=` | Public | Search products |
-| GET | `/api/products/my/list` | Required | My products only |
+| POST | `/api/auth/register` | Public | Register new user |
+| POST | `/api/auth/login` | Public | Login, returns JWT |
+| POST | `/api/auth/logout` | Required | Logout |
+| GET | `/api/auth/me` | Required | Get current user |
+| GET | `/api/auth/google` | Public | Google OAuth redirect |
+
+**Login Request:**
+```json
+POST /api/auth/login
+{ "email": "user@example.com", "password": "password123" }
+```
+**Login Response:**
+```json
+{ "success": true, "token": "eyJhbGci...", "user": { "id": "...", "name": "Rishav", "email": "..." } }
+```
+
+### Product Endpoints
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| GET | `/api/products` | Public | All products (home page) |
+| GET | `/api/products/my/list` | Required | My products only (dashboard) |
 | POST | `/api/products` | Required | Create product |
-| PUT | `/api/products/:id` | Required | Update product |
-| DELETE | `/api/products/:id` | Required | Delete product |
-| POST | `/api/auth/register` | Public | Register user |
-| POST | `/api/auth/login` | Public | Login user |
-| GET | `/api/auth/me` | Required | Get profile |
-| GET | `/api/auth/google` | Public | Google OAuth |
-| POST | `/api/ai/generate-description` | Public | Generate AI description |
+| PUT | `/api/products/:id` | Required | Update product (owner only) |
+| DELETE | `/api/products/:id` | Required | Delete product (owner only) |
 
----
+### AI Endpoint
 
-## Environment Variables
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/api/ai/generate-description` | Public | Generate AI product description |
 
-### Backend (`server/.env`)
+**AI Request:**
+```json
+{
+  "productName": "Himalayan Millet Crunch Bar",
+  "ingredients": "Finger millet, jaggery, sesame, ghee",
+  "weight": "200g pack of 6",
+  "features": "No preservatives, handmade, rich in iron",
+  "tone": "health-focused"
+}
 ```
-PORT=5000
-MONGODB_URI=mongodb+srv://...
-NODE_ENV=production
-JWT_SECRET=...
-JWT_EXPIRES_IN=7d
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-GROQ_API_KEY=...
-SERVER_URL=https://your-api.onrender.com
-CLIENT_URL=https://your-app.vercel.app
-```
-
-### Frontend (`.env` or Vercel dashboard)
-```
-VITE_API_URL=https://your-api.onrender.com/api
+**AI Response:**
+```json
+{
+  "success": true,
+  "description": "When clean nutrition meets Himalayan tradition...",
+  "wordCount": 89,
+  "tone": "health-focused"
+}
 ```
 
 ---
 
-## Known Limitations on Free Tier
+## 🗂️ Folder Structure
 
-| Service | Limitation |
+```
+himshakti-description-generator/
+├── src/                          # React frontend
+│   ├── components/               # Navbar, Footer, ProductCard, ErrorBoundary
+│   │   └── ui/                   # Button, Input, Modal, Toast, Loader
+│   ├── context/                  # ThemeContext, AuthContext
+│   ├── pages/                    # Home, Dashboard, Login, Register, AIGenerator
+│   ├── utils/api.js              # Centralized fetch utility
+│   └── assets/images/            # Local product photographs
+├── server/                       # Express backend
+│   ├── models/                   # Product.js, User.js (Mongoose schemas)
+│   ├── routes/                   # products.js, auth.js, ai.js
+│   ├── middleware/               # auth.js (JWT protect), errorHandler.js
+│   ├── config/passport.js        # Google OAuth strategy
+│   ├── seed.js                   # Database seeder
+│   └── index.js                  # Server entry point
+├── PROMPTS.md                    # AI prompt engineering log
+├── vercel.json                   # React Router catch-all rewrite
+└── README.md
+```
+
+---
+
+## ⚠️ Known Limitations
+
+| Issue | Detail |
 |---|---|
-| **Render (backend)** | Free tier spins down after 15 minutes of inactivity. First request after idle takes 30–60 seconds to wake up. |
-| **MongoDB Atlas M0** | 512MB storage limit, shared cluster, no dedicated RAM. |
-| **Groq API** | Free tier allows 30 requests/minute and 14,400 requests/day on llama-3.3-70b-versatile. |
-| **Vercel** | 100GB bandwidth/month on free tier — more than sufficient for this project. |
+| Render cold start | Backend spins down after 15 min idle — first request takes 30-60 sec |
+| MongoDB Atlas M0 | 512MB storage limit, shared cluster |
+| Groq free tier | 30 requests/minute, 14,400/day on llama-3.3-70b |
+| Google OAuth | Redirect URIs must be updated for any new deployment URL |
+| No image upload | Product images are local assets — no file upload feature yet |
 
 ---
 
-## Week-by-Week Development
+## 🙏 Credits & Acknowledgements
 
-| Week | Focus | Key Deliverable |
-|---|---|---|
-| 1 | Project planning | Brief, sector selection |
-| 2 | Frontend skeleton | React + Tailwind + 4 pages |
-| 3 | UI/UX & components | Component library + dark mode |
-| 4 | REST API | 7 CRUD endpoints |
-| 5 | Database integration | Full CRUD dashboard |
-| 6 | Authentication | JWT + Google OAuth |
-| 7 | AI integration | Groq Llama description generator |
-| 8 | Frontend polish | Images, empty states, error boundary |
-| 9 | Deployment | Vercel + Render + MongoDB Atlas |
+- **TBI-GEU SIP 2026** — Structured internship programme framework
+- **Mentor:** Mr. Harsh Vardhan Singh Rawat, Incubator Manager, TBI-GEU
+- **Groq** — Free LLM inference API (llama-3.3-70b-versatile)
+- **Unsplash** — Free food photography for fallback product images
+- **Tailwind CSS** — Utility-first CSS framework
+- **AI Assistance** — Claude (Anthropic) used for code generation and documentation throughout the project
+
+---
+
+> **TBI-GEU SIP 2026** · Rishav Kumar · TBI-26100016 · B.Tech CSE · Graphic Era University
