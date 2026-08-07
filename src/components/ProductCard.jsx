@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import WhatsAppIcon from "./WhatsAppIcon.jsx";
 
-/**
- * ProductCard
- * Reusable product card with image support, badge overlay,
- * WhatsApp CTA, and emoji fallback if image fails to load.
- */
 export default function ProductCard({ product }) {
   const {
     name, category, price, weight, description,
@@ -38,41 +33,47 @@ export default function ProductCard({ product }) {
         )}
 
         {badge && (
-          <span className="absolute top-3 left-3 bg-white/90 dark:bg-earth-800/90 text-saffron-700 dark:text-saffron-300 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+          <span className="absolute top-3 left-3 bg-white dark:bg-earth-900 text-saffron-700 dark:text-saffron-400 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
             {badge}
           </span>
         )}
 
-        <span className="absolute bottom-3 right-3 bg-black/40 text-white text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm">
+        <span className="absolute bottom-3 right-3 bg-black/50 text-white text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm">
           {category}
         </span>
       </div>
 
       {/* Content */}
       <div className="p-5 flex flex-col flex-1 gap-3">
+
+        {/* Product name */}
         <h3
-          className="text-lg text-earth-900 dark:text-earth-50 leading-snug"
+          className="text-lg font-semibold text-earth-900 dark:text-white leading-snug"
           style={{ fontFamily: "Georgia, serif" }}
         >
           {name}
         </h3>
 
-        <p className="text-sm text-earth-600 dark:text-earth-300 leading-relaxed flex-1">
+        {/* Description */}
+        <p className="text-sm text-earth-600 dark:text-earth-200 leading-relaxed flex-1">
           {description}
         </p>
 
+        {/* Ingredients */}
         {ingredients && (
-          <p className="text-xs text-earth-500 dark:text-earth-400">
-            <span className="font-semibold">Ingredients:</span> {ingredients}
+          <p className="text-xs text-earth-500 dark:text-earth-300">
+            <span className="font-semibold text-earth-700 dark:text-earth-200">Ingredients:</span>{" "}
+            {ingredients}
           </p>
         )}
 
+        {/* Feature tags */}
         {features && features.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {features.map((f) => (
               <span
                 key={f}
-                className="bg-earth-100 dark:bg-earth-700 text-earth-700 dark:text-earth-200 text-xs px-2 py-0.5 rounded-full"
+                className="bg-earth-100 dark:bg-earth-700 text-earth-700 dark:text-earth-100 text-xs px-2 py-0.5 rounded-full font-medium"
               >
                 {f}
               </span>
@@ -80,18 +81,24 @@ export default function ProductCard({ product }) {
           </div>
         )}
 
+        {/* Price row */}
         <div className="flex items-baseline justify-between pt-1">
-          <div>
-            <span className="text-2xl font-bold text-earth-900 dark:text-earth-50">₹{price}</span>
-            <span className="text-xs text-earth-500 dark:text-earth-400 ml-1">{weight}</span>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-bold text-earth-900 dark:text-white">
+              ₹{price}
+            </span>
+            <span className="text-xs text-earth-500 dark:text-earth-300 ml-1">
+              {weight}
+            </span>
           </div>
           {product.inStock === false && (
-            <span className="text-xs font-semibold text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-full">
               Out of Stock
             </span>
           )}
         </div>
 
+        {/* WhatsApp CTA */}
         <a
           href={waLink}
           target="_blank"
