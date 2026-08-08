@@ -54,7 +54,7 @@ export default function About() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="bg-white dark:bg-earth-800 rounded-2xl border border-earth-100 dark:border-earth-700 p-6 hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-earth-700 rounded-2xl border border-earth-100 dark:border-earth-700 p-6 hover:shadow-md transition-shadow"
               >
                 <span className="text-3xl mb-3 block">{item.icon}</span>
                 <h3

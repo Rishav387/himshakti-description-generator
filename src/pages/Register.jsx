@@ -50,7 +50,7 @@ export default function Register() {
 
       <main className="flex-1 flex items-center justify-center py-16 px-4">
         <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-earth-800 rounded-2xl border border-earth-100 dark:border-earth-700 shadow-sm p-8">
+          <div className="bg-white dark:bg-earth-700 rounded-2xl border border-earth-100 dark:border-earth-700 shadow-sm p-8">
 
             <div className="text-center mb-8">
               <span className="text-4xl mb-3 block">🌿</span>

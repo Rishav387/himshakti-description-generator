@@ -122,7 +122,7 @@ export default function AIGenerator() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             {/* Input form */}
-            <div className="bg-white dark:bg-earth-800 rounded-2xl border border-earth-100 dark:border-earth-700 shadow-sm p-6">
+            <div className="bg-white dark:bg-earth-700 rounded-2xl border border-earth-100 dark:border-earth-700 shadow-sm p-6">
               <h2 className="text-xl text-earth-900 dark:text-earth-50 mb-5" style={{ fontFamily: "Georgia, serif" }}>Product Details</h2>
               <div className="space-y-4">
                 <Input label="Product Name *" name="productName" placeholder="e.g. Himalayan Millet Crunch Bar" value={form.productName} onChange={handleChange} />
@@ -156,7 +156,7 @@ export default function AIGenerator() {
             </div>
 
             {/* Output panel */}
-            <div className="bg-white dark:bg-earth-800 rounded-2xl border border-earth-100 dark:border-earth-700 shadow-sm p-6 min-h-[400px] flex flex-col">
+            <div className="bg-white dark:bg-earth-700 rounded-2xl border border-earth-100 dark:border-earth-700 shadow-sm p-6 min-h-[400px] flex flex-col">
               <h2 className="text-xl text-earth-900 dark:text-earth-50 mb-5" style={{ fontFamily: "Georgia, serif" }}>AI Output</h2>
 
               {loading && (

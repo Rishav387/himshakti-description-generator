@@ -15,7 +15,7 @@ export default function ProductCard({ product }) {
   const waLink = `https://wa.me/${(whatsapp || "+91XXXXXXXXXX").replace(/\D/g, "")}?text=${waMessage}`;
 
   return (
-    <article className="bg-white dark:bg-earth-800 rounded-2xl border border-earth-100 dark:border-earth-700 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col">
+    <article className="bg-white dark:bg-earth-700 rounded-2xl border border-earth-100 dark:border-earth-700 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col">
 
       {/* Image / emoji area */}
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-earth-50 to-saffron-50 dark:from-earth-700 dark:to-earth-900">
