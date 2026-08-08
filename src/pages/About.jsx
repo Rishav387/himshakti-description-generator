@@ -16,20 +16,20 @@ export default function About() {
               Our Story
             </p>
             <h1
-              className="text-4xl md:text-5xl text-earth-900 dark:text-earth-50 mb-6"
+              className="text-4xl md:text-5xl text-earth-900 dark:text-white mb-6"
               style={{ fontFamily: "Georgia, serif" }}
             >
               About HimShakti
             </h1>
-            <p className="text-lg text-earth-700 dark:text-earth-200 leading-relaxed max-w-2xl">
+            <p className="text-lg text-earth-700 dark:text-earth-100 leading-relaxed max-w-2xl">
               HimShakti is a Himalayan food processing brand focusing on
               traditional products made by local women's self-help groups in the
               Kumaon region of Uttarakhand, India.
             </p>
           </div>
 
-          {/* Story sections */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-14">
+          {/* Story cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
             {[
               {
                 icon: "🌱",
@@ -54,16 +54,16 @@ export default function About() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="bg-white dark:bg-earth-700 rounded-2xl border border-earth-100 dark:border-earth-700 p-6 hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-earth-700 rounded-2xl border border-earth-100 dark:border-earth-600 p-6 hover:shadow-md transition-shadow"
               >
                 <span className="text-3xl mb-3 block">{item.icon}</span>
                 <h3
-                  className="text-xl text-earth-900 dark:text-earth-50 mb-2"
+                  className="text-xl text-earth-900 dark:text-white mb-3"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   {item.title}
                 </h3>
-                <p className="text-sm text-earth-600 dark:text-earth-300 leading-relaxed">
+                <p className="text-sm text-earth-600 dark:text-earth-100 leading-relaxed">
                   {item.body}
                 </p>
               </div>
@@ -71,21 +71,21 @@ export default function About() {
           </div>
 
           {/* Values strip */}
-          <div className="bg-saffron-50 dark:bg-saffron-900/20 border border-saffron-100 dark:border-saffron-800 rounded-2xl p-8 text-center">
+          <div className="bg-saffron-50 dark:bg-earth-700 border border-saffron-100 dark:border-earth-600 rounded-2xl p-8 text-center">
             <h2
-              className="text-2xl text-earth-900 dark:text-earth-50 mb-2"
+              className="text-2xl text-earth-900 dark:text-white mb-2"
               style={{ fontFamily: "Georgia, serif" }}
             >
               Built on three promises
             </h2>
-            <p className="text-earth-600 dark:text-earth-300 mb-6 text-sm">
+            <p className="text-earth-600 dark:text-earth-200 mb-6 text-sm">
               Every HimShakti product stands on these principles.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
               {["No Preservatives", "Handcrafted Always", "Community First"].map((v) => (
                 <div key={v} className="flex items-center gap-2 justify-center">
                   <span className="w-2 h-2 bg-saffron-500 rounded-full" />
-                  <span className="font-semibold text-earth-800 dark:text-earth-100 text-sm">
+                  <span className="font-semibold text-earth-800 dark:text-white text-sm">
                     {v}
                   </span>
                 </div>
